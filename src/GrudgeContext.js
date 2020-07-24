@@ -1,73 +1,42 @@
-import React, { useReducer, createContext } from 'react';
+import React, { createContext } from 'react';
 import { v4 as id } from 'uuid';
+
+import useUndoReducer from './use-undo-reducer';
 import initialState from './initialState';
 
 export const GrudgeContext = createContext();
 
 const GRUDGE_ADD = 'GRUDGE_ADD';
 const GRUDGE_FORGIVE = 'GRUDGE_FORGIVE';
+const UNDO = 'UNDO';
+const REDO = 'REDO';
 
-const defaultState = {
-  past: [],
-  present: initialState,
-  future: []
-};
-
-const reducer = (state = defaultState, action) => {
+const reducer = (state = initialState, action) => {
   if (action.type === GRUDGE_ADD) {
-    const newPresent = [
+    return [
       {
         id: id(),
         ...action.payload
       },
-      ...state.present
+      ...state
     ];
-
-    return {
-      past: [state.present, ...state.past],
-      present: newPresent,
-      future: []
-    };
   }
 
   if (action.type === GRUDGE_FORGIVE) {
-    const newPresent = state.present.map((grudge) => {
+    console.log(state);
+    return state.map((grudge) => {
       if (grudge.id === action.payload.id) {
         return { ...grudge, forgiven: !grudge.forgiven };
       }
       return grudge;
     });
-
-    return {
-      past: [state.present, ...state.past],
-      present: newPresent,
-      future: []
-    };
-  }
-
-  if (action.type === 'UNDO') {
-    const [newPresent, ...newPast] = state.past;
-    return {
-      past: newPast,
-      present: newPresent,
-      future: [state.present, ...state.future]
-    };
-  }
-
-  if (action.type === 'REDO') {
-    const [newPresent, ...newFuture] = state.future;
-    return {
-      past: [state.present, ...state.past],
-      present: newPresent,
-      future: newFuture
-    };
   }
 
   return state;
 };
 
 export const GrudgeProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, defaultState);
+  const [state, dispatch] = useUndoReducer(reducer, initialState);
   const grudges = state.present;
   const isPast = !!state.past.length;
   const isFuture = !!state.future.length;
@@ -93,11 +62,11 @@ export const GrudgeProvider = ({ children }) => {
   };
 
   const undo = () => {
-    dispatch({ type: 'UNDO' });
+    dispatch({ type: UNDO });
   };
 
   const redo = () => {
-    dispatch({ type: 'REDO' });
+    dispatch({ type: REDO });
   };
 
   return (
