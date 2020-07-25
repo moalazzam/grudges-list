@@ -1,17 +1,12 @@
-import React, { useState, useContext } from 'react';
-import { GrudgeContext } from './GrudgeContext';
+import React, { useState } from 'react';
 
-const NewGrudge = () => {
-  console.log('Rendering New Grudge');
-
-  const { addGrudge } = useContext(GrudgeContext);
-
+const NewGrudge = ({ addGrudge }) => {
   const [person, setPerson] = useState('');
   const [reason, setReason] = useState('');
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     event.preventDefault();
-    addGrudge({ person, reason });
+    addGrudge(person, reason);
   };
 
   return (
@@ -21,14 +16,14 @@ const NewGrudge = () => {
         placeholder="Person"
         type="text"
         value={person}
-        onChange={event => setPerson(event.target.value)}
+        onChange={(event) => setPerson(event.target.value)}
       />
       <input
         className="NewGrudge-input"
         placeholder="Reason"
         type="text"
         value={reason}
-        onChange={event => setReason(event.target.value)}
+        onChange={(event) => setReason(event.target.value)}
       />
       <input className="NewGrudge-submit button" type="submit" />
     </form>
