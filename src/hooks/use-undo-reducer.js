@@ -1,8 +1,5 @@
 import { useReducer } from 'react';
 
-const UNDO = 'UNDO';
-const REDO = 'REDO';
-
 const useUndoReducer = (reducer, initialState) => {
   const undoState = {
     past: [],
@@ -13,7 +10,7 @@ const useUndoReducer = (reducer, initialState) => {
   const undoReducer = (state, action) => {
     const newPresent = reducer(state.present, action);
 
-    if (action.type === UNDO) {
+    if (action.type === 'UNDO') {
       const [newPresent, ...newPast] = state.past;
       return {
         past: newPast,
@@ -22,7 +19,7 @@ const useUndoReducer = (reducer, initialState) => {
       };
     }
 
-    if (action.type === REDO) {
+    if (action.type === 'REDO') {
       const [newPresent, ...newFuture] = state.future;
       return {
         past: [state.present, ...state.past],
